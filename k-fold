@@ -1,0 +1,29 @@
+import os
+import random
+import shutil
+
+
+def split_files_for_cross_validation(folder_path, num_folds=5):
+    # 讀取資料夾下的所有文件
+    files = os.listdir(folder_path)
+    # 打亂文件列表
+    random.shuffle(files)
+    # 將文件列表分為5個相等大小的子集
+    file_chunks = [files[i::num_folds] for i in range(num_folds)]
+
+    # 建立5份交叉驗證的訓練集和測試集
+    for i, fold_files in enumerate(file_chunks):
+        # 創建交叉驗證子資料夾
+        fold_folder = os.path.join(folder_path, f"fold_{i}")
+        os.makedirs(fold_folder, exist_ok=True)
+        # 將文件複製到相應的子資料夾中
+        for file in fold_files:
+            src_path = os.path.join(folder_path, file)
+            dst_path = os.path.join(fold_folder, file)
+            shutil.copy(src_path, dst_path)
+        print(f"Fold {i} created with {len(fold_files)} files.")
+
+
+# 使用示例
+folder_path = "./kfold"
+split_files_for_cross_validation(folder_path)
